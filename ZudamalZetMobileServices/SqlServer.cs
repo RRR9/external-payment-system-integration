@@ -5,7 +5,7 @@ namespace ZudamalZetMobileServices
 {
     class SqlServer
     {
-        static private readonly string _сonnect = @"Data Source=(local);database=NeMONdb;Integrated Security=True";
+        static private readonly string _сonnect = @"Data Source=(local);database=;Integrated Security=True";
 
         public static DataTable GetData(string spName, SqlParameter[] sqlParam)
         {
