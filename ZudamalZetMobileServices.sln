@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZudamalZetMobileServices", "ZudamalZetMobileServices\ZudamalZetMobileServices.csproj", "{960BF34C-B786-4F28-A11B-FE14954D3A62}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{960BF34C-B786-4F28-A11B-FE14954D3A62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{960BF34C-B786-4F28-A11B-FE14954D3A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{960BF34C-B786-4F28-A11B-FE14954D3A62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{960BF34C-B786-4F28-A11B-FE14954D3A62}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {498F72F5-B72F-4BD7-9C47-E46124596A3B}
+	EndGlobalSection
+EndGlobal
