@@ -1,9 +1,10 @@
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using log4net;
 using System.Configuration;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
+using System.Text;
 
 namespace ZudamalZetMobileServices
 {
@@ -15,19 +16,29 @@ namespace ZudamalZetMobileServices
         static public string Response { get; set; }
         static public bool RequestPassed { get; set; }
 
+        static public bool AcceptAllCertifications(object sender, X509Certificate certification, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
+        }
+
         static public void SendRequest(string body)
         {
             Response = null;
             RequestPassed = false;
 
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls13;
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(AcceptAllCertifications);
+
+            byte[] data = Encoding.UTF8.GetBytes(body);
+
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_connection);
-            request.Method = "";
-            request.Timeout = 10000;
+            request.ContentType = "application/xml";
+            request.Method = "POST";
+            request.ContentLength = data.Length;
             _log.Info($"Request: \n\n{body}\n");
-            using(StreamWriter streamWriter = new StreamWriter(request.GetRequestStream()))
+            using(Stream stream = request.GetRequestStream())
             {
-                streamWriter.Write(body);
-                request.ContentLength = body.Length;
+                stream.Write(data, 0, data.Length);
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     using (StreamReader streamReader = new StreamReader(response.GetResponseStream()))

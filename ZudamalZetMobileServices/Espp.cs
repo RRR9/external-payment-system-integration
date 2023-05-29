@@ -11,7 +11,8 @@ namespace ZudamalZetMobileServices
     {
         static public string ESPP_0104010(string number, string provSum, string agentId) // Check possibility to pay
         {
-            string s = null;
+            string s;
+
             using (StreamReader streamReader = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ESPP", "ESPP_0104010.xml")))
             {
                 s = streamReader.ReadToEnd();
@@ -41,7 +42,7 @@ namespace ZudamalZetMobileServices
         ) // Try to pay
         {
             string s = null;
-            using (StreamReader streamReader = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ESPP", "ESPP_0104010.xml")))
+            using (StreamReader streamReader = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ESPP", "ESPP_0104090.xml")))
             {
                 s = streamReader.ReadToEnd();
                 XmlDocument xml = new XmlDocument();

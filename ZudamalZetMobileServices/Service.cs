@@ -9,31 +9,12 @@ namespace ZudamalZetMobileServices
 {
     static class Service
     {
-        static private readonly int _provId = -1; // NEED TO CHANGE
+        static private readonly int _provId = -1; // Need to change
 
         static private readonly ILog _log = LogManager.GetLogger(typeof(Service));
 
-        static private readonly HashSet<int> _accept = new HashSet<int>() {  };
-        static private readonly HashSet<int> _cancel = new HashSet<int>() {  };
-
-        static private string _paymentId;
-        static private string _number;
-        static private string _provSum;
-        static private string _regDateTime;
-        static private string _statusDateTime;
-        static private string _provPaymentId;
-        static private string _agentId;
-
-        static private void Initialize()
-        {
-            _paymentId = "";
-            _number = "";
-            _provSum = "";
-            _regDateTime = "";
-            _statusDateTime = "";
-            _provPaymentId = "";
-            _agentId = "";
-        }
+        static private readonly HashSet<int> _accept = new HashSet<int>() { };
+        static private readonly HashSet<int> _cancel = new HashSet<int>() { };
 
         static private void GetPayments()
         {
@@ -41,41 +22,46 @@ namespace ZudamalZetMobileServices
 
             foreach (DataRow row in dt.Rows)
             {
-                Initialize();
                 try
                 {
+                    Payment payment = new Payment();
                     if (row["ProviderPaymentID"].ToString() == "")
                     {
-                        _paymentId = row["PaymentID"].ToString();
-                        _number = row["Number"].ToString();
-                        _provSum = row["ProviderSum"].ToString().Replace(",", ".");
-                        _regDateTime = row["RegDateTime"].ToString();
-                        _statusDateTime = row["StatusDateTime"].ToString();
-                        _provPaymentId = row["ProviderPaymentID"].ToString();
-                        _agentId = row["AgentID"].ToString();
-                        Pay();
+                        payment.PaymentId = row["PaymentID"].ToString();
+
+                        payment.Number = row["Number"].ToString();
+
+                        payment.ProvSum = row["ProviderSum"].ToString().Replace(",", ".");
+
+                        payment.RegDateTime = row["RegDateTime"].ToString();
+
+                        payment.StatusDateTime = row["StatusDateTime"].ToString();
+
+                        payment.AgentId = row["AgentID"].ToString();
+
+                        Pay(payment);
                     }
                     else
                     {
-                        _paymentId = row["PaymentID"].ToString();
-                        _provPaymentId = row["ProviderPaymentID"].ToString();
-                        RequestToCheckPayment();
+                        payment.PaymentId = row["PaymentID"].ToString();
+                        payment.ProvPaymentId = row["ProviderPaymentID"].ToString();
+                        RequestToCheckPayment(payment);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _log.Error(ex);
                 }
             }
         }
 
-        static private void ModifyPaymentStatus(StatusInDataBase status)
+        static private void ModifyPaymentStatus(StatusInDataBase status, Payment payment)
         {
             SqlServer.ExecSP("ModifyPaymentStatus", new SqlParameter[]
             {
-                new SqlParameter("@PaymentID", _paymentId),
+                new SqlParameter("@PaymentID", payment.PaymentId),
                 new SqlParameter("@ErrorCode", status),
-                new SqlParameter("@ProviderPaymentID", _provPaymentId),
+                new SqlParameter("@ProviderPaymentID", payment.ProvPaymentId),
                 new SqlParameter("@ProviderID", _provId)
             });
         }
@@ -106,10 +92,10 @@ namespace ZudamalZetMobileServices
             GetPayments();
         }
 
-        static private void RequestToCheckPayment()
+        static private void RequestToCheckPayment(Payment payment)
         {
             string req;
-            req = Espp.ESPP_0104085(_provPaymentId);
+            req = Espp.ESPP_0104085(payment.ProvPaymentId);
 
             HttpConnect.SendRequest(req);
             if (!HttpConnect.RequestPassed)
@@ -139,20 +125,20 @@ namespace ZudamalZetMobileServices
             int code = Convert.ToInt32(xmlDocument.GetElementsByTagName("f_01")[0].InnerText);
             StatusInDataBase status = GetPaymentStatusDb(code);
 
-            ModifyPaymentStatus(status);
+            ModifyPaymentStatus(status, payment);
         }
 
-        static private void Pay()
+        static private void Pay(Payment payment)
         {
-            RequestToPayment();
+            RequestToPayment(ref payment);
 
-            SendToPayment();
+            SendToPayment(ref payment);
         }
 
-        static private void RequestToPayment()
+        static private void RequestToPayment(ref Payment payment)
         {
             string req;
-            req = Espp.ESPP_0104010(_number, _provSum, _agentId);
+            req = Espp.ESPP_0104010(payment.Number, payment.ProvSum, payment.AgentId);
 
             HttpConnect.SendRequest(req);
             if (!HttpConnect.RequestPassed)
@@ -180,13 +166,21 @@ namespace ZudamalZetMobileServices
                 throw new ZetMobileException("Received incorrect ESPP");
             }
 
-            _provPaymentId = xmlDocument.GetElementsByTagName("f_02")[0].InnerText;
+            payment.ProvPaymentId = xmlDocument.GetElementsByTagName("f_05")[0].InnerText;
         }
 
-        static private void SendToPayment()
+        static private void SendToPayment(ref Payment payment)
         {
             string req;
-            req = Espp.ESPP_0104090(_number, _provSum, _agentId, _paymentId, _regDateTime, _provPaymentId, _statusDateTime);
+            req = Espp.ESPP_0104090(
+                payment.Number,
+                payment.ProvSum,
+                payment.AgentId,
+                payment.PaymentId,
+                payment.RegDateTime,
+                payment.ProvPaymentId,
+                payment.StatusDateTime
+            );
 
             HttpConnect.SendRequest(req);
             if (!HttpConnect.RequestPassed)
@@ -213,6 +207,8 @@ namespace ZudamalZetMobileServices
             {
                 throw new ZetMobileException("Received incorrect ESPP");
             }
+
+            ModifyPaymentStatus(StatusInDataBase.Awaiting, payment);
         }
     }
 }
