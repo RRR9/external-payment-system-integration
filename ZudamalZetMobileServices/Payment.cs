@@ -5,17 +5,23 @@ namespace ZudamalZetMobileServices
     struct Payment
     {
         public string PaymentId { get; set; }
+
+        private string _number;
         public string Number
         {
             get
             {
-                return Number;
+                return _number;
             }
             set
             {
                 if (value.Length == 9)
                 {
-                    Number = "992" + value;
+                    _number = "992" + value;
+                }
+                else if (value.Length == 12)
+                {
+                    _number = value;
                 }
                 else
                 {
@@ -24,11 +30,13 @@ namespace ZudamalZetMobileServices
             }
         }
         public string ProvSum { get; set; }
+
+        private string _regDateTime;
         public string RegDateTime
         {
             get
             {
-                return RegDateTime;
+                return _regDateTime;
             }
             set
             {
@@ -36,14 +44,16 @@ namespace ZudamalZetMobileServices
                 {
                     throw new ZetMobileException("Can not parse RegDateTime from SQL Server");
                 }
-                RegDateTime = dateTime.ToString("yyyy-MM-ddTHH:mm:ss") + "+00:00";
+                _regDateTime = dateTime.ToString("yyyy-MM-ddTHH:mm:ss") + "+00:00";
             }
         }
+
+        private string _statusDateTime;
         public string StatusDateTime
         {
             get
             {
-                return StatusDateTime;
+                return _statusDateTime;
             }
             set
             {
@@ -51,7 +61,7 @@ namespace ZudamalZetMobileServices
                 {
                     throw new ZetMobileException("Can not parse StatusDateTime from SQL Server");
                 }
-                StatusDateTime = dateTime.ToString("yyyy-MM-ddTHH:mm:ss");
+                _statusDateTime = dateTime.ToString("yyyy-MM-ddTHH:mm:ss");
             }
         }
         public string ProvPaymentId { get; set; }

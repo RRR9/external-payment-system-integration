@@ -9,7 +9,7 @@ namespace ZudamalZetMobileServices
 {
     static class Service
     {
-        static private readonly int _provId = -1; // Need to change
+        static private readonly int _provId = -1; // NEED TO CHANGE
 
         static private readonly ILog _log = LogManager.GetLogger(typeof(Service));
 
@@ -28,16 +28,11 @@ namespace ZudamalZetMobileServices
                     if (row["ProviderPaymentID"].ToString() == "")
                     {
                         payment.PaymentId = row["PaymentID"].ToString();
-
                         payment.Number = row["Number"].ToString();
-
                         payment.ProvSum = row["ProviderSum"].ToString().Replace(",", ".");
-
                         payment.RegDateTime = row["RegDateTime"].ToString();
-
-                        payment.StatusDateTime = row["StatusDateTime"].ToString();
-
-                        payment.AgentId = row["AgentID"].ToString();
+                        payment.StatusDateTime = row["RegDatetime"].ToString();
+                        payment.AgentId = "123";
 
                         Pay(payment);
                     }
