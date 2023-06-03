@@ -92,7 +92,7 @@ namespace ZudamalZetMobileServices
             string req;
             req = Espp.ESPP_0104085(payment.ProvPaymentId);
 
-            HttpConnect.SendRequest(req);
+            HttpConnect.SendRequest(req, payment.PaymentId);
             if (!HttpConnect.RequestPassed)
             {
                 throw new ZetMobileException("Can not get response");
@@ -107,14 +107,9 @@ namespace ZudamalZetMobileServices
                 throw new ZetMobileException("Xml file dont have root");
             }
 
-            if(xmlRoot.Name == "ESPP_2204085")
+            if(xmlRoot.Name != "ESPP_2204085" && xmlRoot.Name != "ESPP_1204085")
             {
-                throw new ZetMobileException("Received ESPP_2204085");
-            }
-
-            if(xmlRoot.Name != "ESPP_1204085")
-            {
-                throw new ZetMobileException("Received incorrect ESPP");
+                throw new ZetMobileException("Received error ESPP");
             }
 
             int code = Convert.ToInt32(xmlDocument.GetElementsByTagName("f_01")[0].InnerText);
@@ -135,7 +130,7 @@ namespace ZudamalZetMobileServices
             string req;
             req = Espp.ESPP_0104010(payment.Number, payment.ProvSum, payment.AgentId);
 
-            HttpConnect.SendRequest(req);
+            HttpConnect.SendRequest(req, payment.PaymentId);
             if (!HttpConnect.RequestPassed)
             {
                 throw new ZetMobileException("Can not get response");
@@ -151,14 +146,17 @@ namespace ZudamalZetMobileServices
                 throw new ZetMobileException("Xml file dont have root");
             }
 
-            if (xmlRoot.Name == "ESPP_2204010")
+            if (xmlRoot.Name != "ESPP_2204010" && xmlRoot.Name != "ESPP_1204010")
             {
-                throw new ZetMobileException("Received ESPP_2204085");
+                throw new ZetMobileException("Received error ESPP");
             }
 
-            if (xmlRoot.Name != "ESPP_1204010")
+            if (xmlRoot.Name == "ESPP_2204010")
             {
-                throw new ZetMobileException("Received incorrect ESPP");
+                int code = Convert.ToInt32(xmlDocument.GetElementsByTagName("f_01")[0].InnerText);
+                StatusInDataBase status = GetPaymentStatusDb(code);
+                ModifyPaymentStatus(status, payment);
+                throw new ZetMobileException("Received ESPP_2204010");
             }
 
             payment.ProvPaymentId = xmlDocument.GetElementsByTagName("f_05")[0].InnerText;
@@ -177,7 +175,7 @@ namespace ZudamalZetMobileServices
                 payment.StatusDateTime
             );
 
-            HttpConnect.SendRequest(req);
+            HttpConnect.SendRequest(req, payment.PaymentId);
             if (!HttpConnect.RequestPassed)
             {
                 throw new ZetMobileException("Can not get response");
@@ -193,14 +191,17 @@ namespace ZudamalZetMobileServices
                 throw new ZetMobileException("Xml file dont have root");
             }
 
-            if (xmlRoot.Name == "ESPP_2204090")
+            if (xmlRoot.Name != "ESPP_2204090" && xmlRoot.Name != "ESPP_1204090")
             {
-                throw new ZetMobileException("Received ESPP_2204090");
+                throw new ZetMobileException("Received error ESPP");
             }
 
-            if (xmlRoot.Name != "ESPP_1204090")
+            if (xmlRoot.Name == "ESPP_2204090")
             {
-                throw new ZetMobileException("Received incorrect ESPP");
+                int code = Convert.ToInt32(xmlDocument.GetElementsByTagName("f_01")[0].InnerText);
+                StatusInDataBase status = GetPaymentStatusDb(code);
+                ModifyPaymentStatus(status, payment);
+                throw new ZetMobileException("Received ESPP_2204090");
             }
 
             ModifyPaymentStatus(StatusInDataBase.Awaiting, payment);

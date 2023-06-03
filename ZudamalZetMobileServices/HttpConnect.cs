@@ -21,7 +21,7 @@ namespace ZudamalZetMobileServices
             return true;
         }
 
-        static public void SendRequest(string body)
+        static public void SendRequest(string body, string paymentId)
         {
             Response = null;
             RequestPassed = false;
@@ -35,7 +35,7 @@ namespace ZudamalZetMobileServices
             request.ContentType = "application/xml";
             request.Method = "POST";
             request.ContentLength = data.Length;
-            _log.Info($"Request: \n\n{body}\n");
+            _log.Info($"Request[{paymentId}]: \n\n{body}\n");
             using(Stream stream = request.GetRequestStream())
             {
                 stream.Write(data, 0, data.Length);
@@ -44,7 +44,7 @@ namespace ZudamalZetMobileServices
                     using (StreamReader streamReader = new StreamReader(response.GetResponseStream()))
                     {
                         Response = streamReader.ReadToEnd();
-                        _log.Info($"Response: \n\n{Response}\n");
+                        _log.Info($"Response[{paymentId}]: \n\n{Response}\n");
                         RequestPassed = true;
                     }
                 }
