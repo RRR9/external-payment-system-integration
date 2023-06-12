@@ -9,7 +9,7 @@ namespace ZudamalZetMobileServices
 {
     static class Service
     {
-        static private readonly int _provId = -1; // NEED TO CHANGE
+        static private readonly int _provId = -1;
 
         static private readonly ILog _log = LogManager.GetLogger(typeof(Service));
 
@@ -22,9 +22,9 @@ namespace ZudamalZetMobileServices
 
             foreach (DataRow row in dt.Rows)
             {
+                Payment payment = new Payment();
                 try
                 {
-                    Payment payment = new Payment();
                     if (row["ProviderPaymentID"].ToString() == "")
                     {
                         payment.PaymentId = row["PaymentID"].ToString();
@@ -42,6 +42,11 @@ namespace ZudamalZetMobileServices
                         payment.ProvPaymentId = row["ProviderPaymentID"].ToString();
                         RequestToCheckPayment(payment);
                     }
+                }
+                catch(ZetMobileBadNumberException ex)
+                {
+                    ModifyPaymentStatus(StatusInDataBase.Cancel, payment);
+                    _log.Error(ex);
                 }
                 catch (Exception ex)
                 {
@@ -160,6 +165,17 @@ namespace ZudamalZetMobileServices
             }
 
             payment.ProvPaymentId = xmlDocument.GetElementsByTagName("f_05")[0].InnerText;
+
+            string balance = xmlDocument.GetElementsByTagName("f_06")[0].InnerText;
+
+            try
+            {
+                SqlServer.UpdateBalance(balance, _provId);
+            }
+            catch(Exception ex)
+            {
+                _log.Error(ex);
+            }
         }
 
         static private void SendToPayment(ref Payment payment)

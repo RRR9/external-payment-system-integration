@@ -49,6 +49,24 @@ namespace ZudamalZetMobileServices
                 return (int)sqlCommand.Parameters["@retVal"].Value;
             }
         }
-    }
 
+        public static void UpdateBalance(string balance, int provId)
+        {
+            int res;
+            string sql = "UPDATE [DB].[dbo].[Provider] SET [OnlineBalance] = " + balance + " WHERE [ID] =" + provId;
+            if (!string.IsNullOrEmpty(balance))
+            {
+                using (SqlConnection conn = new SqlConnection(_сonnect))
+                {
+                    SqlCommand command = new SqlCommand(sql, conn);
+                    command.Connection.Open();
+                    res = command.ExecuteNonQuery();
+                }
+            }
+            else
+            {
+                throw new ZetMobileException("Balance is null");
+            }
+        }
+    }
 }

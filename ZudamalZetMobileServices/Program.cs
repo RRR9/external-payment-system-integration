@@ -32,4 +32,14 @@ namespace ZudamalZetMobileServices
             : base(message)
         { }
     }
+
+    public class ZetMobileBadNumberException : Exception
+    {
+        public ZetMobileBadNumberException()
+        { }
+
+        public ZetMobileBadNumberException(string message)
+            : base(message)
+        { }
+    }
 }

@@ -25,7 +25,7 @@ namespace ZudamalZetMobileServices
                 }
                 else
                 {
-                    throw new ZetMobileException("Wrong number");
+                    throw new ZetMobileBadNumberException("Wrong number");
                 }
             }
         }
